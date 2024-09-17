@@ -112,6 +112,7 @@ const POS = () => {
       setSelectedProducts(selectedProds);
     }
     setName("");
+    setOptions([]);
   };
 
   const handleChange = (e) => {
