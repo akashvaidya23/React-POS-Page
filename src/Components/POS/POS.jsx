@@ -3,6 +3,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useEffect, useRef, useState } from "react";
 import {
   Box,
+  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -13,9 +14,11 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
   TableHead,
   TableRow,
 } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 import { Link } from "react-router-dom";
 
 const POS = () => {
@@ -33,6 +36,9 @@ const POS = () => {
     getAllProducts();
   }, []);
 
+  const submitForm = () => {
+    console.log(selectedProducts);
+  };
   const getAllProducts = async () => {
     try {
       const response = await fetch("https://dummyjson.com/products");
@@ -119,6 +125,8 @@ const POS = () => {
     setLocation(e.target.value);
   };
 
+  let totalQty = 0;
+  let totalAmount = 0;
   return (
     <>
       <div>
@@ -198,43 +206,165 @@ const POS = () => {
         <br />
         <br />
         <Paper sx={{ width: "100%", overflow: "hidden" }}>
-          <TableContainer sx={{ maxHeight: 750 }}>
+          <TableContainer sx={{ maxHeight: 450 }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Sr. No</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>SKU</TableCell>
-                  <TableCell>Quantity</TableCell>
-                  <TableCell>Price</TableCell>
-                  <TableCell>Subtotal</TableCell>
+                  <TableCell
+                    style={{ textAlign: "center", border: "1px solid black" }}
+                  >
+                    Sr. No
+                  </TableCell>
+                  <TableCell
+                    style={{ textAlign: "center", border: "1px solid black" }}
+                  >
+                    Name
+                  </TableCell>
+                  <TableCell
+                    style={{ textAlign: "center", border: "1px solid black" }}
+                  >
+                    SKU
+                  </TableCell>
+                  <TableCell
+                    style={{ textAlign: "center", border: "1px solid black" }}
+                  >
+                    Quantity
+                  </TableCell>
+                  <TableCell
+                    style={{ textAlign: "center", border: "1px solid black" }}
+                  >
+                    Price
+                  </TableCell>
+                  <TableCell
+                    style={{ textAlign: "center", border: "1px solid black" }}
+                  >
+                    Subtotal
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {selectedProducts.map((product, index) => {
+                  totalQty = totalQty + product.quantity;
+                  totalAmount = totalAmount + product.price * product.quantity;
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                      <TableCell key={index}>{index + 1}</TableCell>
-                      <TableCell key={index}>{product.title}</TableCell>
-                      <TableCell key={index}>{product.sku}</TableCell>
-                      <TableCell key={index}>
+                      <TableCell
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid black",
+                        }}
+                        key={index}
+                      >
+                        {index + 1}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid black",
+                        }}
+                        key={index}
+                      >
+                        {product.title}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid black",
+                        }}
+                        key={index}
+                      >
+                        {product.sku}
+                      </TableCell>
+                      <TableCell
+                        key={index}
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid black",
+                        }}
+                      >
                         <TextField
                           id="outlined-basic"
                           variant="outlined"
-                          value={product.quantity}
+                          value={product.quantity.toFixed(2)}
                         />
                       </TableCell>
-                      <TableCell key={index}>{product.price}</TableCell>
-                      <TableCell key={index}>
+                      <TableCell
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid black",
+                        }}
+                        key={index}
+                      >
+                        {product.price}
+                      </TableCell>
+                      <TableCell
+                        key={index}
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid black",
+                        }}
+                      >
                         {product.price * product.quantity}
                       </TableCell>
                     </TableRow>
                   );
                 })}
               </TableBody>
+              <TableFooter stickyHeader>
+                <TableRow hover role="checkbox" tabIndex={-1}>
+                  <TableCell
+                    style={{
+                      textAlign: "center",
+                      border: "1px solid black",
+                      position: "sticky",
+                      bottom: 0,
+                      backgroundColor: "#fff",
+                      zIndex: 1,
+                    }}
+                    colSpan={4}
+                  >
+                    <b>Total</b>
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      textAlign: "center",
+                      border: "1px solid black",
+                      position: "sticky",
+                      bottom: 0,
+                      backgroundColor: "#fff",
+                      zIndex: 1,
+                    }}
+                  >
+                    <b>{totalQty.toFixed(2)}</b>
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      textAlign: "center",
+                      border: "1px solid black",
+                      position: "sticky",
+                      bottom: 0,
+                      backgroundColor: "#fff",
+                      zIndex: 1,
+                    }}
+                  >
+                    <b>{totalAmount.toFixed(2)}</b>
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
             </Table>
           </TableContainer>
         </Paper>
+        <br />
+        <div>
+          <Button
+            variant="contained"
+            color="success"
+            endIcon={<SendIcon />}
+            onClick={submitForm}
+          >
+            Submit
+          </Button>
+        </div>
       </div>
     </>
   );
