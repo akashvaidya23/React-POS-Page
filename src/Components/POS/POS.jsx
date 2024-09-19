@@ -1,6 +1,8 @@
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { useEffect, useRef, useState } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -26,15 +28,20 @@ const POS = () => {
   const [location, setLocation] = useState("");
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
-  const skuRef = useRef(null);
-  const nameRef = useRef(null);
-
   const [sku, setSku] = useState("");
   const [name, setName] = useState("");
 
   useEffect(() => {
     getAllProducts();
   }, []);
+
+  useEffect(() => {
+    searchByName(name);
+  }, [name]);
+
+  useEffect(() => {
+    getProductBySku(sku);
+  }, [sku]);
 
   const submitForm = () => {
     console.log(selectedProducts);
@@ -49,8 +56,13 @@ const POS = () => {
     }
   };
 
-  const getProductBySku = async (e) => {
-    let sku = e.target.value;
+  const handleNameInputChange = (e) => {
+    const nameP = e.target.value;
+    setName(nameP);
+  };
+
+  const getProductBySku = async (sku) => {
+    // let sku = e.target.value;
     let selectedProds = [...selectedProducts];
     if (sku) {
       let prod = allProducts.find((product) => {
@@ -74,13 +86,14 @@ const POS = () => {
           });
         }
         setSelectedProducts(selectedProds);
+      } else {
+        alert("Product not found");
       }
     }
+    setSku("");
   };
 
-  const searchByName = async (e) => {
-    const nameP = e.target.value;
-    setName(nameP);
+  const searchByName = async (name) => {
     if (name.length > 2) {
       const matched = allProducts.filter((prod) => {
         return prod.title.toLowerCase().includes(name.toLowerCase());
@@ -96,7 +109,6 @@ const POS = () => {
   };
 
   const selectProduct = async (event, value) => {
-    console.log(value.id);
     let selectedProds = [...selectedProducts];
     const matched = allProducts.filter((prod) => {
       return prod.id == value.id;
@@ -122,6 +134,10 @@ const POS = () => {
 
   const handleChange = (e) => {
     setLocation(e.target.value);
+  };
+
+  const handleSkuInputChange = (e) => {
+    setSku(e.target.value);
   };
 
   let totalQty = 0;
@@ -178,7 +194,7 @@ const POS = () => {
             <Grid item xs={4}>
               <TextField
                 autoComplete="off"
-                onChange={getProductBySku}
+                onChange={handleSkuInputChange}
                 value={sku}
                 id="outlined-basic"
                 label="Search Product by SKU"
@@ -189,7 +205,7 @@ const POS = () => {
             <Grid item xs={4}>
               <Autocomplete
                 autoComplete="off"
-                onInput={searchByName}
+                onInput={handleNameInputChange}
                 value={name}
                 options={options}
                 sx={{ width: 300 }}
@@ -239,11 +255,17 @@ const POS = () => {
                   >
                     Subtotal
                   </TableCell>
+                  <TableCell
+                    style={{ textAlign: "center", border: "1px solid black" }}
+                  >
+                    Action
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {selectedProducts.map((product, index) => {
                   totalQty = totalQty + product.quantity;
+                  // let totalPrice = product.price * product.quantity;
                   totalAmount = totalAmount + product.price * product.quantity;
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
@@ -303,7 +325,18 @@ const POS = () => {
                           border: "1px solid black",
                         }}
                       >
-                        {product.price * product.quantity}
+                        {(product.price * product.quantity).toFixed(2)}
+                      </TableCell>
+                      <TableCell
+                        key={index}
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid black",
+                        }}
+                      >
+                        <IconButton aria-label="Delete">
+                          <DeleteIcon />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   );
@@ -320,7 +353,7 @@ const POS = () => {
                       backgroundColor: "#fff",
                       zIndex: 1,
                     }}
-                    colSpan={4}
+                    colSpan={3}
                   >
                     <b>Total</b>
                   </TableCell>
@@ -345,9 +378,29 @@ const POS = () => {
                       backgroundColor: "#fff",
                       zIndex: 1,
                     }}
+                  ></TableCell>
+                  <TableCell
+                    style={{
+                      textAlign: "center",
+                      border: "1px solid black",
+                      position: "sticky",
+                      bottom: 0,
+                      backgroundColor: "#fff",
+                      zIndex: 1,
+                    }}
                   >
                     <b>{totalAmount.toFixed(2)}</b>
                   </TableCell>
+                  <TableCell
+                    style={{
+                      textAlign: "center",
+                      border: "1px solid black",
+                      position: "sticky",
+                      bottom: 0,
+                      backgroundColor: "#fff",
+                      zIndex: 1,
+                    }}
+                  ></TableCell>
                 </TableRow>
               </TableFooter>
             </Table>
