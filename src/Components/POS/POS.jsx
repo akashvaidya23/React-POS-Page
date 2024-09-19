@@ -65,7 +65,7 @@ const POS = () => {
           }
         });
         if (!exists) {
-          selectedProds.push({ ...prod, quantity: 1 });
+          selectedProds.unshift({ ...prod, quantity: 1 });
         } else {
           selectedProds.map((prod) => {
             if (prod.sku == sku) {
@@ -87,9 +87,8 @@ const POS = () => {
       });
       let optionsList = [];
       matched.map((match) => {
-        optionsList.push({ id: match.id, label: match.title });
+        optionsList.unshift({ id: match.id, label: match.title });
       });
-      console.log(optionsList);
       setOptions(optionsList);
     } else {
       setOptions([]);
